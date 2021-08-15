@@ -1,23 +1,17 @@
-import { getTTFB, getLCP, getFID, getFCP, getCLS } from 'web-vitals';
-
-const DESC = {
-  CLS: 'Cumulative Layout Shift',
-  FCP: 'First Contentful Paint',
-  FID: 'First Input Delay',
-  LCP: 'Largest Contentful Paint',
-  TTFB: 'Time to First Byte (Reduce server response times)',
-};
+import { getLCP, getFID, getCLS, getFCP, getTTFB } from 'web-vitals';
+import { METRICS_DESC, getColor } from './utils';
 
 const infoDiv = document.createElement('div');
 infoDiv.style.position = 'fixed';
 infoDiv.style.left = 0;
 infoDiv.style.top = 0;
 infoDiv.style.zIndex = 999999;
-infoDiv.style.backgroundColor = 'black';
-infoDiv.style.color = 'white';
-infoDiv.style.opacity = 0.7;
-infoDiv.style.padding = '1rem';
+infoDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+infoDiv.style.color = 'black';
+infoDiv.style.padding = '1em';
+infoDiv.style.margin = '0.5em';
 infoDiv.style.fontFamily = 'Arial';
+infoDiv.style.border = '2px solid black';
 document.body.appendChild(infoDiv);
 
 const metrics = {};
@@ -34,7 +28,15 @@ const gatherMetrics = ({ name, value }) => {
   });
 
   const metricsHTML = Object.keys(metrics)
-    .map((k) => `<div title="${DESC[k]}">${k}</div><div>${Math.round(metrics[k])}</div>`)
+    .map((k) => {
+      const color = getColor(k, metrics[k]);
+
+      return `<div title="${
+        METRICS_DESC[k].title
+      }" style="color: ${color};">${k}</div><div style="color: ${color};">${Math.round(
+        metrics[k]
+      )}</div>`;
+    })
     .join('');
 
   infoDiv.innerHTML = `
@@ -47,8 +49,8 @@ const gatherMetrics = ({ name, value }) => {
   `;
 };
 
+getLCP(gatherMetrics);
+getFID(gatherMetrics);
 getCLS(gatherMetrics);
 getFCP(gatherMetrics);
-getFID(gatherMetrics);
-getLCP(gatherMetrics);
 getTTFB(gatherMetrics);

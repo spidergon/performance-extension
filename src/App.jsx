@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-
+import { getColor } from './utils';
 import './App.css';
 
-const METRICS = ['CLS', 'FCP', 'FID', 'LCP', 'TTFB'];
+const METRICS = ['LCP', 'FID', 'CLS', 'FCP', 'TTFB'];
 
 const App = () => {
   const [data, setData] = useState({});
@@ -37,11 +37,19 @@ const App = () => {
           {Object.keys(data).map((url) => (
             <tr key={url}>
               <td>{url.slice(0, 30)}</td>
-              {METRICS.map((metric) => (
-                <td key={[url, metric].join('')} width="16%">
-                  {Math.round((data[url][metric] || { average: 0 }).average)}
-                </td>
-              ))}
+              {METRICS.map((metric) => {
+                const value = Math.round((data[url][metric] || { average: 0 }).average);
+
+                return (
+                  <td
+                    style={{ color: getColor(metric, value) }}
+                    key={[url, metric].join('')}
+                    width="16%"
+                  >
+                    {value}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
